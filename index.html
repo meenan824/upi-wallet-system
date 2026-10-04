@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>N Pay - Fast Multi-Currency UPI & Crypto Wallet</title>
+  <!-- PWA & Mobile Install Support -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <meta name="theme-color" content="#10b981">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="N Pay">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- HTML5 QR Code Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center sm:p-4 selection:bg-emerald-500 selection:text-black">
+
+  <!-- Mobile Device Shell Container -->
+  <div class="w-full sm:max-w-md h-screen sm:h-[880px] sm:max-h-[95vh] bg-slate-900 sm:rounded-[40px] shadow-2xl flex flex-col overflow-hidden sm:border sm:border-slate-800 relative">
+    
+    <!-- Top System Bar -->
+    <div class="px-6 pt-4 pb-2 flex justify-between items-center text-xs font-semibold text-slate-400 select-none z-10">
+      <span id="currentTime">12:30</span>
+      <div class="flex items-center space-x-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">N Pay Multi-Rails</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+        <span class="text-xs">100%</span>
+      </div>
+    </div>
+
+    <!-- MAIN APP SCREEN WRAPPER -->
+    <div id="appContainer" class="flex-1 flex flex-col overflow-hidden relative">
+
+      <!-- ============================================== -->
+      <!-- SCREEN 1: LOGIN / SIGNUP (ZERO KYC - OTP ONLY) -->
+      <!-- ============================================== -->
+      <div id="loginScreen" class="flex-1 p-6 flex flex-col justify-between overflow-y-auto">
+        <div class="pt-8">
+          <div class="flex items-center justify-between mb-6">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <span class="text-2xl font-black text-slate-950 tracking-tighter">NP</span>
+            </div>
+            <button id="btnOpenServerConfig" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition flex items-center space-x-1.5 text-xs font-semibold" title="Server URL Settings">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span>Server</span>
+            </button>
+          </div>
+          <h1 class="text-3xl font-black tracking-tight text-white mb-2">N Pay</h1>
+          <p class="text-sm text-slate-400">Zero KYC • Instant UPI, USDT & Global Currency Wallet</p>
+
+          <!-- Step 1: Mobile Phone -->
+          <div id="phoneStep" class="mt-8 space-y-4">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Enter Mobile Number</label>
+            <div class="flex items-center bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3.5 focus-within:border-emerald-500 transition">
+              <span class="text-slate-400 font-bold mr-3">+91</span>
+              <input type="tel" id="inputPhone" maxlength="10" placeholder="98765 43210" class="bg-transparent text-white font-semibold flex-1 outline-none text-lg tracking-wider" value="9876543210">
+            </div>
+            <p class="text-xs text-slate-500">🔒 Kisi bhi document ya KYC ki zaroorat nahi hai. Sirf OTP se account ready.</p>
+            <button id="btnSendOtp" class="w-full mt-4 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold hover:brightness-110 active:scale-95 transition shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-2">
+              <span>Get OTP</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+
+          <!-- Step 2: OTP Verification -->
+          <div id="otpStep" class="mt-8 space-y-4 hidden">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Enter 6-Digit SMS OTP</label>
+              <button id="btnChangePhone" class="text-xs text-emerald-400 font-semibold hover:underline">Change Number</button>
+            </div>
+            
+            <p id="otpSentNotice" class="text-xs text-slate-400">OTP aapke mobile SIM par send kiya gaya hai.</p>
+
+            <div id="otpBanner" class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs text-emerald-400 flex items-center justify-between hidden">
+              <span>Test OTP: <strong id="demoOtpText" class="tracking-widest">123456</strong></span>
+              <button id="btnAutoFillOtp" class="underline font-bold">Auto Fill</button>
+            </div>
+
+            <div class="flex items-center bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3.5 focus-within:border-emerald-500 transition">
+              <input type="text" id="inputOtp" maxlength="6" placeholder="• • • • • •" class="bg-transparent text-white font-bold flex-1 outline-none text-xl tracking-[0.5em] text-center">
+            </div>
+
+            <button id="btnVerifyOtp" class="w-full mt-4 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold hover:brightness-110 active:scale-95 transition shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-2">
+              <span>Verify & Continue</span>
+            </button>
+          </div>
+
+          <!-- Step 3: MPIN Setup / Unlock (PhonePe Style) -->
+          <div id="mpinStep" class="mt-8 space-y-4 hidden">
+            <div>
+              <h2 id="mpinTitle" class="text-lg font-bold text-white">Set 4-Digit UPI MPIN</h2>
+              <p id="mpinSubText" class="text-xs text-slate-400 mt-1">Apne wallet transfer aur security ke liye 4-digit PIN banayein:</p>
+            </div>
+
+            <div class="flex items-center bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3.5 focus-within:border-emerald-500 transition">
+              <input type="password" id="inputLoginMpin" maxlength="4" placeholder="• • • •" class="bg-transparent text-white font-black flex-1 outline-none text-2xl tracking-[0.6em] text-center">
+            </div>
+
+            <button id="btnConfirmMpin" class="w-full mt-4 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold hover:brightness-110 active:scale-95 transition shadow-lg shadow-emerald-500/25 flex items-center justify-center space-x-2">
+              <span id="btnConfirmMpinText">Confirm MPIN & Open Wallet</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-6 pb-2 text-center text-[11px] text-slate-600">
+          N Pay Digital Services • 256-bit Encrypted Multi-Currency Wallet
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- SCREEN 2: WALLET DASHBOARD (MAIN LOGGED IN)     -->
+      <!-- ============================================== -->
+      <div id="dashboardScreen" class="flex-1 flex flex-col overflow-hidden hidden">
+        
+        <!-- App Header -->
+        <div class="p-6 pb-2 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-sm">
+              <span id="userAvatarText">NP</span>
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <h2 id="userDisplayName" class="text-sm font-bold text-white leading-tight">User</h2>
+                <span id="userBadgeSub" class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase bg-slate-800 text-slate-400">FREE</span>
+              </div>
+              <div class="flex items-center space-x-1.5 cursor-pointer mt-0.5" id="btnCopyUpi">
+                <span id="userVirtualUpi" class="text-[11px] text-slate-400 font-mono">user@npay</span>
+                <svg class="w-3.5 h-3.5 text-slate-500 hover:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </div>
+            </div>
+          </div>
+          <button id="btnLogout" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition" title="Logout">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          </button>
+        </div>
+
+        <!-- Scrollable Content Area -->
+        <div class="flex-1 overflow-y-auto px-6 py-2 space-y-4">
+          
+          <!-- PRIMARY BALANCE CARD: INR (Always on Top) -->
+          <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-6 border border-slate-800 shadow-xl">
+            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
+            
+            <div class="flex justify-between items-start mb-2">
+              <div class="flex items-center space-x-1.5">
+                <span class="text-xs">🇮🇳</span>
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">INR Wallet Balance</span>
+              </div>
+              <button id="btnRefreshBalance" class="text-slate-400 hover:text-emerald-400 transition">
+                <svg id="refreshIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              </button>
+            </div>
+
+            <div class="flex items-baseline space-x-1 mb-3">
+              <span class="text-2xl font-bold text-slate-400">₹</span>
+              <span id="displayBalanceInr" class="text-4xl font-extrabold text-white tracking-tight">0.00</span>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px]">
+              <div class="flex items-center space-x-1.5 text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>UPI Rails</span>
+              </div>
+              <span id="userLimitTag" class="text-[10px] text-slate-400">Limit: ₹1 - ₹5,00,000</span>
+            </div>
+          </div>
+
+          <!-- MULTI-CURRENCY BALANCES (USDT, USD, EUR, AED) -->
+          <!-- Requirement: "custmer wallet me inr or other currancy dono ka alag alg total wallet balanc show hona chaiye" -->
+          <div>
+            <div class="flex justify-between items-center mb-2 px-1">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Global & Crypto Assets</span>
+              <span class="text-[10px] text-slate-500">Live Balances</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2.5">
+              <!-- USDT Card -->
+              <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-sm">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-[10px] font-bold text-teal-400 flex items-center space-x-1">
+                    <span>₮</span>
+                    <span>USDT (Tether)</span>
+                  </span>
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-teal-500/10 text-teal-400 font-mono">TRC20</span>
+                </div>
+                <div class="text-xl font-black text-white font-mono">₮<span id="displayBalanceUsdt">0.00</span></div>
+                <div class="text-[10px] text-slate-500 truncate mt-0.5" id="userUsdtAddressShort">TX...</div>
+              </div>
+
+              <!-- USD Card -->
+              <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-sm">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-[10px] font-bold text-blue-400 flex items-center space-x-1">
+                    <span>🇺🇸</span>
+                    <span>USD Dollar</span>
+                  </span>
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-blue-500/10 text-blue-400 font-mono">USD</span>
+                </div>
+                <div class="text-xl font-black text-white font-mono">$<span id="displayBalanceUsd">0.00</span></div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Global Wire</div>
+              </div>
+
+              <!-- AED Card -->
+              <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-sm">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-[10px] font-bold text-amber-400 flex items-center space-x-1">
+                    <span>🇦🇪</span>
+                    <span>AED Dirham</span>
+                  </span>
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-amber-500/10 text-amber-400 font-mono">AED</span>
+                </div>
+                <div class="text-xl font-black text-white font-mono"><span id="displayBalanceAed">0.00</span> <span class="text-xs text-slate-400 font-normal">AED</span></div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Gulf Rails</div>
+              </div>
+
+              <!-- EUR Card -->
+              <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 shadow-sm">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-[10px] font-bold text-indigo-400 flex items-center space-x-1">
+                    <span>🇪🇺</span>
+                    <span>EUR Euro</span>
+                  </span>
+                  <span class="text-[9px] px-1 py-0.2 rounded bg-indigo-500/10 text-indigo-400 font-mono">EUR</span>
+                </div>
+                <div class="text-xl font-black text-white font-mono">€<span id="displayBalanceEur">0.00</span></div>
+                <div class="text-[10px] text-slate-500 mt-0.5">SEPA Rails</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subscription Banner -->
+          <div id="subscriptionCard" class="hidden p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 flex items-center justify-between">
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="text-amber-400 text-xs font-black">👑 <span id="subPlanTitle">N Pay Pro Pass</span></span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-0.5">Pay ₹0 fees on all UPI transfers + Priority payout</p>
+            </div>
+            <button id="btnBuySubscription" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-xl text-xs transition shadow-md shadow-amber-500/20">
+              Upgrade ₹<span id="subCostDisplay">99</span>
+            </button>
+          </div>
+
+          <!-- Quick Action Buttons Grid -->
+          <div class="grid grid-cols-4 gap-3 text-center">
+            <!-- Add Money (Triggers Currency Picker) -->
+            <button id="btnOpenAddMoney" class="flex flex-col items-center group">
+              <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 group-hover:bg-emerald-500 text-emerald-400 group-hover:text-slate-950 border border-emerald-500/20 flex items-center justify-center transition shadow-md shadow-emerald-500/5">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+              </div>
+              <span class="text-xs font-semibold mt-2 text-slate-200">Add Money</span>
+            </button>
+
+            <!-- Send Money -->
+            <button id="btnOpenSendMoney" class="flex flex-col items-center group">
+              <div class="w-14 h-14 rounded-2xl bg-teal-500/10 group-hover:bg-teal-400 text-teal-400 group-hover:text-slate-950 border border-teal-500/20 flex items-center justify-center transition shadow-md shadow-teal-500/5">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+              </div>
+              <span class="text-xs font-semibold mt-2 text-slate-200">Send Money</span>
+            </button>
+
+            <!-- Scan QR -->
+            <button id="btnOpenScanner" class="flex flex-col items-center group">
+              <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 group-hover:bg-cyan-400 text-cyan-400 group-hover:text-slate-950 border border-cyan-500/20 flex items-center justify-center transition shadow-md shadow-cyan-500/5">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+              </div>
+              <span class="text-xs font-semibold mt-2 text-slate-200">Scan QR</span>
+            </button>
+
+            <!-- My QR (Triggers Currency Picker with INR at top) -->
+            <button id="btnOpenMyQr" class="flex flex-col items-center group">
+              <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 group-hover:bg-indigo-400 text-indigo-400 group-hover:text-slate-950 border border-indigo-500/20 flex items-center justify-center transition shadow-md shadow-indigo-500/5">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              </div>
+              <span class="text-xs font-semibold mt-2 text-slate-200">Receive QR</span>
+            </button>
+          </div>
+
+          <!-- Recent Transactions Section -->
+          <div class="pt-2">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-sm font-bold text-white tracking-wide">Passbook & Ledger</h3>
+              <span id="txnCountBadge" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-mono">0</span>
+            </div>
+
+            <div id="transactionsList" class="space-y-2.5">
+              <div class="py-8 text-center text-slate-500 text-xs">
+                No transactions yet. Add money to get started!
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAL: CURRENCY SELECTOR FOR RECEIVING MONEY   -->
+    <!-- (Requirement: "jese hi kisi ko qr ya upi id bheje to option aajaye ki aap konsa payment deposit krne ke liye bhej rhe h, sbse uper to inr hi show hona chaiye") -->
+    <!-- ============================================== -->
+    <div id="modalCurrencySelector" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-40 flex flex-col justify-end hidden transition-all">
+      <div class="bg-slate-900 border-t border-slate-800 rounded-t-[32px] p-6 max-h-[85%] overflow-y-auto">
+        <div class="flex justify-between items-center mb-2">
+          <div>
+            <h3 class="text-lg font-black text-white">Select Deposit Currency</h3>
+            <p class="text-xs text-slate-400">Payment receive karne ke liye currency chunein</p>
+          </div>
+          <button id="btnCloseCurrencySelector" class="p-1 rounded-full text-slate-400 hover:text-white">✕</button>
+        </div>
+
+        <div class="space-y-2.5 mt-4">
+          <!-- 1. INR: Pinned at the Very Top -->
+          <button class="btnSelectCurrency w-full p-4 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-teal-500/10 hover:from-emerald-500/30 border-2 border-emerald-500/40 flex items-center justify-between transition text-left" data-currency="INR">
+            <div class="flex items-center space-x-3.5">
+              <div class="w-11 h-11 rounded-xl bg-emerald-500/20 flex items-center justify-center text-xl font-bold text-emerald-400">
+                🇮🇳
+              </div>
+              <div>
+                <div class="text-sm font-black text-white flex items-center space-x-2">
+                  <span>Indian Rupee (INR)</span>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500 text-slate-950 font-bold uppercase">Default UPI</span>
+                </div>
+                <div class="text-xs text-slate-400">PhonePe, Google Pay, Paytm, BHIM QR</div>
+              </div>
+            </div>
+            <span class="text-lg font-bold text-emerald-400">₹</span>
+          </button>
+
+          <!-- 2. USDT Crypto -->
+          <button class="btnSelectCurrency w-full p-3.5 rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-800 flex items-center justify-between transition text-left" data-currency="USDT">
+            <div class="flex items-center space-x-3.5">
+              <div class="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center text-lg font-black text-teal-400">
+                ₮
+              </div>
+              <div>
+                <div class="text-sm font-bold text-white flex items-center space-x-2">
+                  <span>Tether (USDT)</span>
+                  <span class="text-[9px] px-1.5 py-0.2 rounded bg-teal-500/20 text-teal-400 font-mono">TRC20 / Crypto</span>
+                </div>
+                <div class="text-xs text-slate-400">Binance, TrustWallet, On-chain Deposit</div>
+              </div>
+            </div>
+            <span class="text-sm font-bold text-teal-400">₮</span>
+          </button>
+
+          <!-- 3. US Dollar (USD) -->
+          <button class="btnSelectCurrency w-full p-3.5 rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-800 flex items-center justify-between transition text-left" data-currency="USD">
+            <div class="flex items-center space-x-3.5">
+              <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-lg">
+                🇺🇸
+              </div>
+              <div>
+                <div class="text-sm font-bold text-white">US Dollar (USD)</div>
+                <div class="text-xs text-slate-400">International Card & Bank Wire</div>
+              </div>
+            </div>
+            <span class="text-sm font-bold text-blue-400">$</span>
+          </button>
+
+          <!-- 4. UAE Dirham (AED) -->
+          <button class="btnSelectCurrency w-full p-3.5 rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-800 flex items-center justify-between transition text-left" data-currency="AED">
+            <div class="flex items-center space-x-3.5">
+              <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-lg">
+                🇦🇪
+              </div>
+              <div>
+                <div class="text-sm font-bold text-white">UAE Dirham (AED)</div>
+                <div class="text-xs text-slate-400">Dubai / Gulf Payment Transfer</div>
+              </div>
+            </div>
+            <span class="text-xs font-bold text-amber-400 font-mono">AED</span>
+          </button>
+
+          <!-- 5. Euro (EUR) -->
+          <button class="btnSelectCurrency w-full p-3.5 rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-800 flex items-center justify-between transition text-left" data-currency="EUR">
+            <div class="flex items-center space-x-3.5">
+              <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-lg">
+                🇪🇺
+              </div>
+              <div>
+                <div class="text-sm font-bold text-white">Euro (EUR)</div>
+                <div class="text-xs text-slate-400">SEPA & European Rails</div>
+              </div>
+            </div>
+            <span class="text-sm font-bold text-indigo-400">€</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAL 1: ADD MONEY (DYNAMIC QR FOR SELECTED CURR)-->
+    <!-- ============================================== -->
+    <div id="modalAddMoney" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-30 flex flex-col justify-end hidden transition-all">
+      <div class="bg-slate-900 border-t border-slate-800 rounded-t-[32px] p-6 max-h-[90%] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+              <span>Add Money</span>
+              <span id="activeDepositCurrencyBadge" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono">INR</span>
+            </h3>
+            <p id="depositLimitNotice" class="text-[11px] text-slate-400">Limit: ₹1 to ₹5,00,000</p>
+          </div>
+          <button id="btnCloseAddMoney" class="p-1 rounded-full text-slate-400 hover:text-white">✕</button>
+        </div>
+
+        <div id="addMoneyInputView">
+          <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Enter Amount</label>
+          <div class="flex items-center bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 mb-3">
+            <span id="depositCurrencySymbol" class="text-xl font-bold text-emerald-400 mr-2">₹</span>
+            <input type="number" id="inputDepositAmount" placeholder="500" class="bg-transparent text-white font-extrabold text-2xl flex-1 outline-none" value="500">
+          </div>
+
+          <!-- Quick Chips -->
+          <div class="grid grid-cols-4 gap-2 mb-6" id="quickDepositChips">
+            <button class="chipAmount py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300" data-amt="100">+100</button>
+            <button class="chipAmount py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300" data-amt="500">+500</button>
+            <button class="chipAmount py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300" data-amt="2000">+2000</button>
+            <button class="chipAmount py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300" data-amt="10000">+10000</button>
+          </div>
+
+          <button id="btnGenerateDepositQr" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold hover:brightness-110 active:scale-95 transition flex items-center justify-center space-x-2">
+            <span>Generate Payment QR</span>
+          </button>
+        </div>
+
+        <!-- Generated QR Code View -->
+        <div id="addMoneyQrView" class="hidden text-center space-y-4">
+          <div class="p-4 bg-white rounded-3xl inline-block shadow-2xl mx-auto">
+            <img id="depositQrImage" src="" alt="Payment QR" class="w-56 h-56 mx-auto">
+          </div>
+          <div>
+            <div class="text-2xl font-black text-white"><span id="depositSymbolLabel">₹</span><span id="depositQrAmount">500</span> <span id="depositCurrencyCode" class="text-sm font-normal text-slate-400">INR</span></div>
+            <p id="depositInstructions" class="text-xs text-slate-400 mt-1">Scan using any UPI App</p>
+            <div id="usdtAddressBox" class="hidden mt-2 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono break-all text-teal-400">
+              <span id="usdtAddressText">TX...</span>
+            </div>
+          </div>
+
+          <div id="upiAppLinks" class="flex justify-center space-x-3 pt-1">
+            <a id="linkGPay" href="#" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-semibold text-slate-300 border border-slate-700">Google Pay</a>
+            <a id="linkPhonePe" href="#" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-semibold text-slate-300 border border-slate-700">PhonePe</a>
+            <a id="linkPaytm" href="#" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-semibold text-slate-300 border border-slate-700">Paytm</a>
+          </div>
+
+          <div class="pt-3 border-t border-slate-800">
+            <button id="btnSimulateDepositSuccess" class="w-full py-3.5 rounded-2xl bg-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 border border-emerald-500/30 font-bold transition flex items-center justify-center space-x-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              <span>Simulate Payment Success (Instant Test)</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAL 2: SEND MONEY (MULTI-CURRENCY)           -->
+    <!-- ============================================== -->
+    <div id="modalSendMoney" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-30 flex flex-col justify-end hidden transition-all">
+      <div class="bg-slate-900 border-t border-slate-800 rounded-t-[32px] p-6 max-h-[90%] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold text-white">Send Money / Payout</h3>
+          <button id="btnCloseSendMoney" class="p-1 rounded-full text-slate-400 hover:text-white">✕</button>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Currency Selection -->
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5">Select Currency</label>
+            <select id="selectSendCurrency" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white font-bold outline-none">
+              <option value="INR" selected>🇮🇳 INR (Indian Rupee - UPI)</option>
+              <option value="USDT">₮ USDT (Tether Crypto TRC20)</option>
+              <option value="USD">🇺🇸 USD (US Dollar)</option>
+              <option value="AED">🇦🇪 AED (UAE Dirham)</option>
+              <option value="EUR">🇪🇺 EUR (Euro)</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label id="sendRecipientLabel" class="block text-xs font-semibold uppercase text-slate-400">Recipient UPI ID / VPA</label>
+              <button id="btnSendScanTrigger" class="text-xs text-emerald-400 font-semibold flex items-center space-x-1 hover:underline">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                <span>Scan QR</span>
+              </button>
+            </div>
+            <div class="flex items-center bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 focus-within:border-teal-400 transition">
+              <input type="text" id="inputRecipientUpi" placeholder="e.g. friend@okaxis, shop@paytm" class="bg-transparent text-white font-medium flex-1 outline-none text-sm font-mono">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5">Amount to Send</label>
+            <div class="flex items-center bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 focus-within:border-teal-400 transition">
+              <span id="sendCurrencySymbol" class="text-xl font-bold text-teal-400 mr-2">₹</span>
+              <input type="number" id="inputSendAmount" placeholder="100" class="bg-transparent text-white font-extrabold text-2xl flex-1 outline-none">
+            </div>
+            
+            <!-- Live Fee Breakdown -->
+            <div class="mt-2 p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 text-[11px] space-y-1">
+              <div class="flex justify-between text-slate-400">
+                <span>Available Balance:</span>
+                <span class="text-white font-bold"><span id="sendWalletBalanceDisplay">0.00</span></span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>Platform Fee:</span>
+                <span id="displayTransferFee" class="font-bold text-amber-400">0.00</span>
+              </div>
+              <div class="flex justify-between text-slate-300 font-bold border-t border-slate-800 pt-1">
+                <span>Total Debit:</span>
+                <span id="displayTotalDebit" class="text-emerald-400 font-mono">0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5">Note (Optional)</label>
+            <div class="flex items-center bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3">
+              <input type="text" id="inputSendNote" placeholder="Payment note..." class="bg-transparent text-white text-sm flex-1 outline-none">
+            </div>
+          </div>
+
+          <button id="btnExecuteSendMoney" class="w-full mt-2 py-4 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 text-slate-950 font-bold hover:brightness-110 active:scale-95 transition flex items-center justify-center space-x-2">
+            <span>Send Payment Now</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAL 3: QR CODE SCANNER (CAMERA & UPLOAD)     -->
+    <!-- ============================================== -->
+    <div id="modalScanner" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-40 flex flex-col justify-between hidden p-6">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-white">Scan Any Payment QR</h3>
+        <button id="btnCloseScanner" class="p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <div class="flex-1 flex flex-col items-center justify-center my-4">
+        <div id="qrReaderContainer" class="w-full max-w-[280px] aspect-square rounded-3xl overflow-hidden border-2 border-emerald-500 shadow-2xl relative">
+        </div>
+        <p class="text-xs text-slate-400 mt-4 text-center">PhonePe, GPay, Paytm, BHIM ya USDT QR scan karein</p>
+      </div>
+
+      <div class="space-y-3">
+        <label class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-2xl flex items-center justify-center space-x-2 cursor-pointer transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <span>Upload QR from Gallery</span>
+          <input type="file" id="qrFileInput" accept="image/*" class="hidden">
+        </label>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MODAL 4: MY QR CODE / RECEIVE VIEW             -->
+    <!-- ============================================== -->
+    <div id="modalMyQr" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-30 flex flex-col justify-end hidden transition-all">
+      <div class="bg-slate-900 border-t border-slate-800 rounded-t-[32px] p-6 text-center">
+        <div class="flex justify-between items-center mb-4">
+          <div class="text-left">
+            <h3 class="text-lg font-bold text-white">Receive Money</h3>
+            <span id="myQrCurrencyBadge" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono">INR UPI</span>
+          </div>
+          <button id="btnCloseMyQr" class="p-1 rounded-full text-slate-400 hover:text-white">✕</button>
+        </div>
+
+        <div class="p-4 bg-white rounded-3xl inline-block shadow-2xl mx-auto mb-4">
+          <img id="myPersonalQrImage" src="" alt="My N Pay QR" class="w-56 h-56 mx-auto">
+        </div>
+
+        <div class="text-sm font-bold text-white mb-1" id="myQrPhone">+91 9876543210</div>
+        <div class="text-xs text-emerald-400 font-mono mb-2" id="myQrUpi">user@npay</div>
+        <p class="text-xs text-slate-400" id="myQrInstruction">Is QR code ko scan karke payment receive karein</p>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="absolute top-12 left-6 right-6 p-4 rounded-2xl bg-slate-800/95 border border-slate-700 shadow-2xl text-xs font-semibold text-white flex items-center space-x-3 transition-all transform -translate-y-24 opacity-0 z-50 pointer-events-none">
+      <span id="toastIcon" class="text-lg">✅</span>
+      <span id="toastMsg" class="flex-1">Notification</span>
+    </div>
+
+  </div>
+
+  <!-- SERVER URL CONFIG MODAL -->
+  <div id="modalServerConfig" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <span>🌐</span>
+          <span>Server Backend URL</span>
+        </h3>
+        <button id="btnCloseServerConfig" class="text-slate-400 hover:text-white p-1 text-lg font-bold">&times;</button>
+      </div>
+      <p class="text-xs text-slate-400 mb-3">Online backend (jaise Render, Railway ya custom server) ka URL yahan set karein:</p>
+      <div class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 mb-2 focus-within:border-emerald-500">
+        <input type="text" id="inputCustomServerUrl" placeholder="https://your-domain.onrender.com" class="w-full bg-transparent text-white text-xs font-mono outline-none">
+      </div>
+      <p class="text-[11px] text-slate-500 mb-4">Current: <span id="currentServerUrlDisplay" class="font-mono text-emerald-400">Loading...</span></p>
+      <div class="flex space-x-2">
+        <button id="btnSaveServerConfig" class="flex-1 py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs hover:brightness-110 transition">Save & Connect</button>
+        <button id="btnResetServerConfig" class="px-3 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs hover:bg-slate-700 transition">Reset</button>
+      </div>
+  <!-- PHONEPE-STYLE UPI PIN MODAL -->
+  <div id="modalUpiPin" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex flex-col justify-between hidden">
+    <!-- Top Header -->
+    <div class="p-6 flex justify-between items-center border-b border-slate-800">
+      <div>
+        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Paying To</span>
+        <h4 id="pinModalRecipientName" class="text-sm font-bold text-white truncate max-w-[200px]">User</h4>
+      </div>
+      <div class="text-right">
+        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Amount</span>
+        <h3 id="pinModalAmount" class="text-lg font-black text-emerald-400 font-mono">₹0.00</h3>
+      </div>
+    </div>
+
+    <!-- Center PIN Dots -->
+    <div class="flex-1 flex flex-col items-center justify-center p-6 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      </div>
+      <p class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-5">Enter 4-Digit Secret UPI PIN</p>
+      <div class="flex space-x-4 mb-3">
+        <span id="pinDot0" class="w-4 h-4 rounded-full border-2 border-slate-600 transition"></span>
+        <span id="pinDot1" class="w-4 h-4 rounded-full border-2 border-slate-600 transition"></span>
+        <span id="pinDot2" class="w-4 h-4 rounded-full border-2 border-slate-600 transition"></span>
+        <span id="pinDot3" class="w-4 h-4 rounded-full border-2 border-slate-600 transition"></span>
+      </div>
+      <p id="pinErrorText" class="text-xs text-rose-400 font-semibold h-4"></p>
+      <p class="text-[10px] text-slate-500 mt-2">🔒 UPI PIN is never shared with anyone.</p>
+    </div>
+
+    <!-- Numeric Keypad -->
+    <div class="bg-slate-900 border-t border-slate-800 p-6 pb-8">
+      <div class="grid grid-cols-3 gap-3 max-w-xs mx-auto text-center font-bold text-xl text-white">
+        <button class="pinKey py-3.5 rounded-2xl bg-slate-800/60 active:bg-slate-700" data-key="1">1</button>
+        <button class="pinKey py-3.5 rounded-2xl bg-slate-800/60 active:bg-slate-700" data-key="2">2</button>
+        <button class="pinKey py-3.5 rounded-2xl bg-slate-800/60 active:bg-slate-700" data-key="3">3</button>
+        <button class="pinKey py-3.5 rounded-2xl bg-slate-800/60 active:bg-slate-700" data-key="4">4</button>
+        <button class="pinKey py-3.5 rounded-2xl bg-slate-800/60 active:bg-slate-700" data-key="5">5</button>
+        <button class="pinKey py-3.5 rounded-2xl bg-slate-800/60 active:bg-slate-700" data-key="6">6</button>
+        <button class="pinKey py-3.5 rounded-2xl bg-slate-800/60 active:bg-slate-700" data-key="7">7</button>
+        <button class="pinKey py-3.5 rounded-2xl bg-slate-800/60 active:bg-slate-700" data-key="8">8</button>
+        <button class="pinKey py-3.5 rounded-2xl bg-slate-800/60 active:bg-slate-700" data-key="9">9</button>
+        <button id="btnPinCancel" class="py-3.5 rounded-2xl text-rose-400 active:bg-slate-800 text-xs font-bold uppercase tracking-wider">Cancel</button>
+        <button class="pinKey py-3.5 rounded-2xl bg-slate-800/60 active:bg-slate-700" data-key="0">0</button>
+        <button id="btnPinBackspace" class="py-3.5 rounded-2xl text-slate-300 active:bg-slate-800 text-lg">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT SUCCESSFUL SCREEN (PHONEPE STYLE) -->
+  <div id="modalPaymentSuccess" class="fixed inset-0 bg-slate-950 z-50 flex flex-col justify-between p-6 hidden">
+    <div class="flex-1 flex flex-col items-center justify-center text-center">
+      <!-- Animated Circle Tick -->
+      <div class="w-24 h-24 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center text-emerald-400 mb-6 shadow-2xl shadow-emerald-500/30">
+        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <h2 class="text-2xl font-black text-white mb-1">Payment Successful</h2>
+      <h1 id="successAmountDisplay" class="text-4xl font-black text-emerald-400 mb-3 font-mono">₹0.00</h1>
+      <p class="text-sm text-slate-300">Paid to <strong id="successRecipientDisplay" class="text-white">User</strong></p>
+      
+      <div class="mt-6 w-full max-w-xs bg-slate-900 border border-slate-800 rounded-2xl p-4 text-left text-xs space-y-2.5">
+        <div class="flex justify-between text-slate-400">
+          <span>UPI Ref / UTR:</span>
+          <span id="successUtrDisplay" class="font-mono text-white font-bold">UTR12345678</span>
+        </div>
+        <div class="flex justify-between text-slate-400">
+          <span>Date & Time:</span>
+          <span id="successTimeDisplay" class="text-slate-300">Just now</span>
+        </div>
+        <div class="flex justify-between text-slate-400">
+          <span>Payment Mode:</span>
+          <span class="text-emerald-400 font-semibold">N Pay Fast Wallet</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <button id="btnClosePaymentSuccess" class="w-full py-4 rounded-2xl bg-emerald-500 text-slate-950 font-black text-base hover:brightness-110 active:scale-95 transition shadow-lg shadow-emerald-500/25">
+        Done
+      </button>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
